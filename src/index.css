@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+    --font-montserrat :  "Montserrat", sans-serif;
+    --font-urbanist : "Urbanist", sans-serif;
+}
+.input {
+  @apply w-full p-3 rounded-xl font-semibold border border-gray-300 outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.error {
+  @apply text-red-500 text-xs mt-1;
+}.glass-card {
+  @apply bg-white/5 backdrop-blur-xl
+  border border-white/10
+  rounded-2xl p-5
+  shadow-lg;
+}
+
+.reward-box {
+  @apply bg-gradient-to-br
+  bg-gradient-to-br from-indigo-500 to-purple-600
+  backdrop-blur-lg
+  rounded-xl text-center py-6
+  
+}
+
+.glass-button {
+  @apply flex items-center gap-1
+  bg-indigo-500/70 hover:bg-indigo-600
+  px-4 py-1 rounded-lg
+  transition;
+}
+
+.share-btn {
+  @apply bg-white/5 backdrop-blur-lg
+  border border-white/10
+  rounded-xl p-4
+  hover:scale-105 transition;
+}
+.inputGlass {
+  @apply w-full px-4 py-3 rounded-xl bg-white/5 backdrop-blur-md
+  border border-white/20 text-white placeholder-gray-300
+  focus:outline-none focus:ring-2 focus:ring-purple-600;
+}
+
+.error {
+  @apply text-red-400 text-xs mt-1;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes slow-zoom {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 6s ease-in-out infinite;
+}
+
+select option {
+  background-color: #0f172a;
+  color: white;
+}
+
+select option:hover {
+  background-color: #7c3aed; /* purple */
+  color: white;
+}
+
+/* ===== TABLE ROOT ===== */
+.custom-ant-table .ant-table {
+  background: transparent !important;
+}
+
+/* remove white wrapper */
+.custom-ant-table .ant-table-container {
+  background: transparent !important;
+}
+
+/* header */
+.custom-ant-table .ant-table-thead > tr > th {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #c7d2fe !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* body rows */
+.custom-ant-table .ant-table-tbody > tr > td {
+  background: transparent !important;
+  color: #e5e7eb !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* row hover */
+.custom-ant-table .ant-table-tbody > tr:hover > td {
+  background: rgba(99, 102, 241, 0.08) !important;
+}
+
+/* pagination */
+.custom-ant-table .ant-pagination {
+  color: white;
+}
+
+.custom-ant-table .ant-pagination-item {
+  background: transparent;
+  border-color: rgba(255,255,255,0.2);
+}
+
+.custom-ant-table .ant-pagination-item-active {
+  background: #d063f1;
+  border-color: #e563f1;
+  color: white !important;
+}
+
+/* remove internal white scroll */
+.custom-ant-table .ant-table-body {
+  background: transparent !important;
+}
+.custom-ant-table .ant-pagination-item-active {
+  background: #d063f1 !important;
+  border-color: #e563f1 !important;
+}
+
+.custom-ant-table .ant-pagination-item-active a {
+  color: white !important;
+}
+.custom-ant-table .ant-pagination-item a {
+  color: white !important;
+}
+
+.ant-empty-description {
+    color: white !important;
+}
