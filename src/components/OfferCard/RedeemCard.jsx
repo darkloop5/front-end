@@ -5,6 +5,7 @@ import {
 
 import useAuthData from "../../hooks/useAuthData";
 import { useGetUserBalanceQuery } from "../../redux/services/auth/authApiService";
+import toast from "react-hot-toast";
 
 const RedeemCard = ({ redeem }) => {
   const { user } = useAuthData();
@@ -14,6 +15,8 @@ const RedeemCard = ({ redeem }) => {
   const {
     data: balanceData,
     isFetching,
+    
+    
   } = useGetUserBalanceQuery(user?.userId, {
     skip: !user?.userId,
   });
@@ -39,21 +42,33 @@ const RedeemCard = ({ redeem }) => {
     (item) => item.redeemId === redeem._id
   );
 
-  const handleRedeem = async () => {
-    if (isRedeemed) return;
 
-    try {
-      await createRedeem({
-        redeemId: redeem._id,
-        amount: redeem.amount,
-        userId: user?.userId,
-      }).unwrap();
 
-      console.log("Redeemed successfully");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+const handleRedeem = async () => {
+  if (isRedeemed) return;
+
+  try {
+    const res = await createRedeem({
+      redeemId: redeem._id,
+      amount: redeem.amount,
+      userId: user?.userId,
+    }).unwrap();
+
+
+    toast.success(res?.message || "Redeem successful!");
+    
+  } catch (error) {
+    console.log(error);
+
+    // RTK Query error handling
+    const message =
+      error?.data?.message ||
+      error?.message ||
+      "Something went wrong!";
+
+    toast.error(message);
+  }
+};
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
@@ -99,11 +114,11 @@ const RedeemCard = ({ redeem }) => {
             <button
               onClick={handleRedeem}
               disabled={isRedeemed || isLoading}
-              className={`px-6 py-2 rounded-xl text-white font-semibold transition cursor-pointer
+              className={`px-6 py-2 rounded-xl text-white font-semibold transition 
                 ${
                   isRedeemed
-                    ? "bg-gray-600 cursor-not-allowed"
-                    : "bg-gradient-to-r from-purple-600 to-pink-500 shadow-md hover:scale-105 transition"
+                    ? "bg-gray-600 cursor-not-allowed cu"
+                    : "bg-gradient-to-r from-purple-600 to-pink-500 shadow-md hover:scale-105 transition cursor-pointer"
                 }
               `}
             >
