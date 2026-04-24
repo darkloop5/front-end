@@ -26,8 +26,6 @@ const Withdraw = () => {
   const totalBalance = balanceData?.available_balance ?? 0;
   const withdrawableBalance = balanceData?.earning_balance ?? 0;
 
-  const bonusBalance = balanceData?.bonus_balance ?? 0;
-
   const loading = isLoading || isFetching;
 
   const {
@@ -64,12 +62,12 @@ const Withdraw = () => {
   };
 
   return (
-    <div className="w-full max-w-md mt-5 bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035] shadow-2xl rounded-[40px]">
+    <div className="w-full font-urbanist max-w-md mt-5 bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035] shadow-2xl rounded-[40px]">
       <div className="px-4 relative z-10">
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-6 border-l-[6px] border-purple-600">
           {/* HEADER */}
           <div className="flex justify-between items-center mb-2">
-            <div className="px-3 py-1 rounded-full bg-gradient-to-r via-pink-500 to-purple-600 text-white text-[10px] font-extrabold animate-bounce">
+            <div className="px-3 mx-auto py-1 rounded-full bg-gradient-to-r via-pink-500 to-purple-600 text-white text-[10px] font-extrabold animate-bounce">
               ⭐ LEVEL 1
             </div>
           </div>
@@ -79,7 +77,7 @@ const Withdraw = () => {
 rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
           >
             {/* TOTAL BALANCE */}
-            <div className="pb-2 border-b border-white/10">
+            <div className="pb-2 border-b border-white/10 text-center">
               <p className="text-white text-sm tracking-wide">Total Balance</p>
 
               {loading ? (
@@ -96,13 +94,13 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
             </div>
 
             {/* BALANCE GRID */}
-            <div className="grid grid-cols-2 gap-2 mt-2">
+            <div className="mt-2">
               {/* Withdrawable */}
               <div
                 className="bg-white/5 rounded-xl p-4 border border-white/10 
   hover:border-purple-500/40 transition-all duration-300"
               >
-                <p className="text-xs text-white font-semibold mb-1">
+                <p className="text- text-white font-semibold mb-1">
                   Withdrawable
                 </p>
 
@@ -114,22 +112,6 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
                   </p>
                 )}
               </div>
-
-              {/* Bonus */}
-              <div
-                className="bg-white/5 rounded-xl p-4 border border-white/10 
-    hover:border-pink-500/40 transition-all duration-300"
-              >
-                <p className="text-xs text-white mb-1">Bonus </p>
-
-                {loading ? (
-                  <Skeleton className="w-24 h-6" />
-                ) : (
-                  <p className="text-xl font-bold text-purple-500">
-                    ৳{bonusBalance}
-                  </p>
-                )}
-              </div>
             </div>
             {/* 🔥 Highlight Note */}
             <p className="mt-2 text-[11px] font-medium text-center text-yellow-400  bg-yellow-400/10 px-2 py-1 rounded-md ">
@@ -137,7 +119,7 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
             </p>
           </div>
           {/* FORM */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2">
             {/* Amount */}
             <div>
               <label className="text-white text-sm font-semibold mb-1 block">
