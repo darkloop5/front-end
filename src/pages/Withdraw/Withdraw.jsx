@@ -24,7 +24,8 @@ const Withdraw = () => {
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
 
   const totalBalance = balanceData?.available_balance ?? 0;
-  const withdrawableBalance = balanceData?.earning_balance  + balanceData?.redeem_balance;
+  const withdrawableBalance =
+    balanceData?.earning_balance + balanceData?.redeem_balance;
 
   const loading = isLoading || isFetching;
 
@@ -88,7 +89,7 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
       bg-gradient-to-r from-purple-400 via-fuchsia-500 to-pink-500
       bg-clip-text text-transparent drop-shadow-lg"
                 >
-                  ৳{totalBalance}
+                  ৳{totalBalance || 0}
                 </h2>
               )}
             </div>
@@ -108,7 +109,7 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
                   <Skeleton className="w-24 h-6" />
                 ) : (
                   <p className="text-xl font-bold text-pink-500">
-                    ৳{withdrawableBalance}
+                    ৳{withdrawableBalance || 0}
                   </p>
                 )}
               </div>

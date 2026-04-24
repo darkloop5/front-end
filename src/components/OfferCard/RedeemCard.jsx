@@ -1,7 +1,5 @@
-import React from "react";
-import {
-  useCreateRedeemMutation,
-} from "../../redux/services/redeem/redeemApiServices";
+import React, { useState } from "react";
+import { useCreateRedeemMutation } from "../../redux/services/redeem/redeemApiServices";
 
 import useAuthData from "../../hooks/useAuthData";
 import { useGetUserBalanceQuery } from "../../redux/services/auth/authApiService";
@@ -9,17 +7,16 @@ import toast from "react-hot-toast";
 
 const RedeemCard = ({ redeem }) => {
   const { user } = useAuthData();
+  const [redeemCode, setRedeemCode] = useState("");
 
   const [createRedeem, { isLoading }] = useCreateRedeemMutation();
 
-  const {
-    data: balanceData,
-    isFetching,
-    
-    
-  } = useGetUserBalanceQuery(user?.userId, {
-    skip: !user?.userId,
-  });
+  const { data: balanceData, isFetching } = useGetUserBalanceQuery(
+    user?.userId,
+    {
+      skip: !user?.userId,
+    },
+  );
 
   // loading state UI
   if (isFetching) {
@@ -39,36 +36,29 @@ const RedeemCard = ({ redeem }) => {
 
   // check already redeemed from DB
   const isRedeemed = balanceData?.redeemedItems?.some(
-    (item) => item.redeemId === redeem._id
+    (item) => item.redeemId === redeem._id,
   );
 
+  const handleRedeem = async () => {
+    if (isRedeemed) return;
 
+    try {
+      const res = await createRedeem({
+        redeemId: redeem._id,
+        amount: redeem.amount,
+        userId: user?.userId,
+        redeemCode,
+      }).unwrap();
 
-const handleRedeem = async () => {
-  if (isRedeemed) return;
+      toast.success(res?.message || "Redeem successful!");
+    } catch (error) {
+      // RTK Query error handling
+      const message =
+        error?.data?.message || error?.message || "Something went wrong!";
 
-  try {
-    const res = await createRedeem({
-      redeemId: redeem._id,
-      amount: redeem.amount,
-      userId: user?.userId,
-    }).unwrap();
-
-
-    toast.success(res?.message || "Redeem successful!");
-    
-  } catch (error) {
-    console.log(error);
-
-    // RTK Query error handling
-    const message =
-      error?.data?.message ||
-      error?.message ||
-      "Something went wrong!";
-
-    toast.error(message);
-  }
-};
+      toast.error(message);
+    }
+  };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
@@ -85,56 +75,56 @@ const handleRedeem = async () => {
   return (
     <div className="w-full max-w-md mx-auto font-urbanist">
       <div className="relative rounded-3xl p-[1px] bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 shadow-xl">
-
         <div className="bg-[#0B0614] rounded-3xl p-4 relative overflow-hidden">
-
           {/* image */}
-          <div className="flex justify-center mb-4 w-20 h-20 mx-auto rounded-md">
+          <div className="flex justify-center mb-3 w-20 h-20 mx-auto rounded-md">
             <img
               src={redeem?.image}
               className="w-full h-full rounded-md cursor-pointer"
               alt="redeem"
             />
           </div>
-
           {/* title */}
-          <div className="flex items-center justify-center gap-3 mb-3">
+          <div className="flex items-center justify-center gap-3">
             <span className="text-orange-400 font-bold text-lg">
               {redeem?.title}
             </span>
           </div>
-
-          {/* description */}
+          {/* description */}{" "}
           <p className="text-center text-white/70 text-sm mb-4">
-            {redeem?.description}
+            {" "}
+            {redeem?.description}{" "}
           </p>
+          {/* redeem code + button */}
+          <div className="flex items-center gap-3 mb-4">
+            {!isRedeemed && (
+              <input
+                type="text"
+                value={redeemCode}
+                onChange={(e) => setRedeemCode(e.target.value)}
+                placeholder="Enter redeem code"
+                className="flex-1 px-4 py-2 rounded-xl bg-[#1a1025] text-white border border-purple-500 outline-none focus:border-pink-500"
+              />
+            )}
 
-          {/* button */}
-          <div className="flex justify-center">
             <button
               onClick={handleRedeem}
-              disabled={isRedeemed || isLoading}
-              className={`px-6 py-2 rounded-xl text-white font-semibold transition 
-                ${
-                  isRedeemed
-                    ? "bg-gray-600 cursor-not-allowed cu"
-                    : "bg-gradient-to-r from-purple-600 to-pink-500 shadow-md hover:scale-105 transition cursor-pointer"
-                }
-              `}
+              disabled={isRedeemed || isLoading || !redeemCode}
+              className={`px-5 py-2 rounded-xl text-white font-semibold transition whitespace-nowrap
+      ${
+        isRedeemed
+          ? "bg-gray-600 cursor-not-allowed mx-auto"
+          : "bg-gradient-to-r from-purple-600 to-pink-500 shadow-md hover:scale-105 transition cursor-pointer"
+      }
+    `}
             >
-              {isRedeemed
-                ? "Already Redeemed"
-                : isLoading
-                ? "Processing..."
-                : "Redeem Now"}
+              {isRedeemed ? "Redeemed" : isLoading ? "Processing..." : "Redeem"}
             </button>
           </div>
-
           {/* date */}
           <p className="text-center text-red-400 text-xs mt-4">
             Expired on {formatDate(redeem?.date)}
           </p>
-
         </div>
       </div>
     </div>
