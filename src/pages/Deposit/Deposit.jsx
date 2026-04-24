@@ -17,7 +17,7 @@ const Deposit = () => {
   const [addPayment, { isLoading }] = useAddPaymentMutation();
   const { user } = useAuthData();
   const { data: paymentMethod } = useGetMethodsQuery();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // ✅ STORE RANDOM AGENT SAFELY
   const [paymentAgent, setPaymentAgent] = useState(null);
@@ -31,9 +31,7 @@ const Deposit = () => {
 
     const randomIndex = Math.floor(Math.random() * data.length);
     setPaymentAgent(data[randomIndex]);
-
   }, [paymentMethod?.data, paymentAgent]);
- 
 
   const {
     register,
@@ -51,7 +49,7 @@ const Deposit = () => {
     const paymentData = {
       transactionId: data.transactionId,
       amount: Number(data.amount),
-      method: paymentAgent?.name ,
+      method: paymentAgent?.name,
       status: "Pending",
       userId: user.userId,
     };
@@ -60,7 +58,7 @@ const Deposit = () => {
       await addPayment(paymentData).unwrap();
       toast.success("✅ Deposit Submitted Successfully");
       reset();
-      navigate('/invoice')
+      navigate("/invoice");
     } catch (error) {
       console.error(error);
       toast.error("❌ Deposit Failed");
@@ -86,13 +84,14 @@ const Deposit = () => {
       {/* HEADER CARD */}
       <div className="px-4 relative z-10 mt-6">
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-4 border-l-[6px] border-purple-600">
-
           {icon && (
             <div className="flex justify-center perspective-[1000px]">
               <div className="relative group">
-                <div className="absolute inset-0 blur-2xl opacity-60 
+                <div
+                  className="absolute inset-0 blur-2xl opacity-60 
                   bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 
-                  rounded-full animate-pulse" />
+                  rounded-full animate-pulse"
+                />
 
                 <img
                   src={icon}
@@ -116,19 +115,13 @@ const Deposit = () => {
 
             <p className="text-white text-xl mb-1 font-bold">
               Number:{" "}
-              <span className="font-medium">
-                {paymentAgent?.number}
-              </span>
+              <span className="font-medium">{paymentAgent?.number}</span>
             </p>
 
             <p className="text-white text-lg font-semibold">
-              Type:{" "}
-              <span className="font-medium">
-                {paymentAgent?.type}
-              </span>
+              Type: <span className="font-medium">{paymentAgent?.type}</span>
             </p>
           </div>
-
         </div>
       </div>
 
@@ -138,6 +131,9 @@ const Deposit = () => {
           className="bg-white/5 px-6 space-y-4 py-6 backdrop-blur-md rounded-3xl shadow-sm"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <h3 className="text-center font-extrabold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
+            Minimum Deposit ৳1000
+          </h3>
           <div>
             <input
               {...register("transactionId", {
@@ -156,12 +152,16 @@ const Deposit = () => {
               type="number"
               {...register("amount", {
                 required: "Amount required",
+                min: {
+                  value: 1000,
+                  message: "Minimum Deposit  ৳1000",
+                },
               })}
               placeholder="Enter Amount"
               className="inputGlass"
             />
             {errors.amount && (
-              <p className="error">{errors.amount.message}</p>
+              <p className="error font-semibold">{errors.amount.message}</p>
             )}
           </div>
 
