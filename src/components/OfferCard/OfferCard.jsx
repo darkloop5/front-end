@@ -48,8 +48,8 @@ const OfferCard = ({ offer }) => {
           </div> */}
 
           <button
-            className="w-full py-4 bg-gradient-to-r  via-pink-500 to-purple-600  
-    text-white text-[10px] font-extrabold tracking-wide 
+            className="w-full py-2 bg-gradient-to-r  via-pink-500 to-purple-600  
+    text-white font-extrabold tracking-wide 
     shadow-[0_0_12px_rgba(236,72,153,0.8)]  text-white font-bold rounded-2xl shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
           >
             {" "}
