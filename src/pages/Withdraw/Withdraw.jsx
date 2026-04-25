@@ -24,8 +24,7 @@ const Withdraw = () => {
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
 
   const totalBalance = balanceData?.available_balance ?? 0;
-  const withdrawableBalance =
-    balanceData?.earning_balance + balanceData?.redeem_balance;
+  const withdrawableBalance = balanceData?.earning_balance ?? 0
 
   const loading = isLoading || isFetching;
 

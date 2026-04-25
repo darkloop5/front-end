@@ -42,6 +42,13 @@ const RedeemCard = ({ redeem }) => {
   const handleRedeem = async () => {
     if (isRedeemed) return;
 
+    const cleanCode = redeemCode.trim();
+
+    if (!cleanCode) {
+      toast.error("Please enter redeem code");
+      return;
+    }
+
     try {
       const res = await createRedeem({
         redeemId: redeem._id,
