@@ -128,12 +128,22 @@ const Deposit = () => {
       {/* FORM */}
       <div className="p-4">
         <form
-          className="bg-white/5 px-6 space-y-4 py-6 backdrop-blur-md rounded-3xl shadow-sm"
+          className="bg-white/5 px-6 space-y-3 py-6 backdrop-blur-md rounded-3xl shadow-sm"
           onSubmit={handleSubmit(onSubmit)}
         >
           <h3 className="text-center font-extrabold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
             Minimum Deposit ৳1000
           </h3>
+          {paymentAgent?.name == "Nagad" && (
+            <h3 className="text-center font-extrabold text-[15px] bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
+              Bkash নম্বর পেতে পেজটি Reload করুন 📢
+            </h3>
+          )}{" "}
+          {paymentAgent?.name == "Bkash" && (
+            <h3 className="text-center font-extrabold text-[15px] bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
+              Nagad নম্বর পেতে পেজটি Reload করুন 📢
+            </h3>
+          )}
           <div>
             <input
               {...register("transactionId", {
@@ -146,7 +156,6 @@ const Deposit = () => {
               <p className="error">{errors.transactionId.message}</p>
             )}
           </div>
-
           <div>
             <input
               type="number"
@@ -164,7 +173,6 @@ const Deposit = () => {
               <p className="error font-semibold">{errors.amount.message}</p>
             )}
           </div>
-
           <button
             disabled={isLoading}
             className="w-full py-4 cursor-pointer text-white rounded-2xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105 transition-all flex justify-center items-center gap-2 shadow-lg"
