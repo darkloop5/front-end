@@ -16,22 +16,28 @@ import { useNavigate } from "react-router-dom";
 const Deposit = () => {
   const [addPayment, { isLoading }] = useAddPaymentMutation();
   const { user } = useAuthData();
-  const { data: paymentMethod, isLoading: methodLoading  } = useGetMethodsQuery();
+  const { data: paymentMethod, isLoading: methodLoading } =
+    useGetMethodsQuery();
   const navigate = useNavigate();
 
-  // ✅ STORE RANDOM AGENT SAFELY
+  // ✅ TAB STATE
+  const [activeTab, setActiveTab] = useState("bkash");
   const [paymentAgent, setPaymentAgent] = useState(null);
 
+  // ✅ RANDOM AGENT BASED ON TAB
   useEffect(() => {
-    // already selected → don't change again
-    if (paymentAgent) return;
-
     const data = paymentMethod?.data;
     if (!data || data.length === 0) return;
 
-    const randomIndex = Math.floor(Math.random() * data.length);
-    setPaymentAgent(data[randomIndex]);
-  }, [paymentMethod?.data, paymentAgent]);
+    const filtered = data.filter((item) =>
+      item.name.toLowerCase().includes(activeTab),
+    );
+
+    if (filtered.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * filtered.length);
+    setPaymentAgent(filtered[randomIndex]);
+  }, [paymentMethod?.data, activeTab]);
 
   const {
     register,
@@ -49,7 +55,7 @@ const Deposit = () => {
     const paymentData = {
       transactionId: data.transactionId,
       amount: Number(data.amount),
-      method: paymentAgent?.name,
+      method: activeTab, // ✅ FIXED
       status: "Pending",
       userId: user.userId,
     };
@@ -65,82 +71,112 @@ const Deposit = () => {
     }
   };
 
-  // 🔥 ICON SELECTOR
-  const getAgentIcon = (name) => {
-    if (!name) return null;
+  // ✅ ICON
+  const icon =
+    activeTab === "bkash"
+      ? bkashIcon
+      : activeTab === "nagad"
+        ? nagadIcon
+        : null;
 
-    const lower = name.toLowerCase();
+  // ✅ LOADING
+  if (methodLoading || !paymentAgent) {
+    return (
+      <div className="p-4 space-y-4 animate-pulse">
+        <div className="bg-white/5 rounded-3xl p-6">
+          <div className="w-40 h-20 mx-auto bg-white/10 rounded-xl mb-5" />
+          <div className="space-y-3 text-center">
+            <div className="h-6 w-40 mx-auto bg-white/10 rounded" />
+            <div className="h-5 w-52 mx-auto bg-white/10 rounded" />
+          </div>
+        </div>
 
-    if (lower.includes("bkash")) return bkashIcon;
-    if (lower.includes("nagad")) return nagadIcon;
-
-    return null;
-  };
-
-  const icon = getAgentIcon(paymentAgent?.name);
-
-
-  // ✅ SHOW SKELETON WHILE LOADING PAYMENT METHOD
-if (methodLoading || !paymentAgent) {
-  return (
-    <div className="p-4 space-y-4 animate-pulse">
-      {/* Header Skeleton */}
-      <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-6">
-        <div className="w-40 h-20 mx-auto bg-white/10 rounded-xl mb-5" />
-
-        <div className="space-y-3 text-center">
-          <div className="h-6 w-40 mx-auto bg-white/10 rounded" />
-          <div className="h-5 w-52 mx-auto bg-white/10 rounded" />
-          <div className="h-5 w-32 mx-auto bg-white/10 rounded" />
+        <div className="bg-white/5 rounded-3xl p-6 space-y-4">
+          <div className="h-12 bg-white/10 rounded-xl" />
+          <div className="h-12 bg-white/10 rounded-xl" />
         </div>
       </div>
-
-      {/* Form Skeleton */}
-      <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 space-y-4">
-        <div className="h-6 w-56 mx-auto bg-white/10 rounded" />
-        <div className="h-12 bg-white/10 rounded-xl" />
-        <div className="h-12 bg-white/10 rounded-xl" />
-        <div className="h-14 bg-white/10 rounded-2xl" />
-      </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <>
-      {/* HEADER CARD */}
+      {/* HEADER */}
       <div className="px-4 relative z-10 mt-6">
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-4 border-l-[6px] border-purple-600">
-          {icon && (
-            <div className="flex justify-center perspective-[1000px]">
-              <div className="relative group">
-                <div
-                  className="absolute inset-0 blur-2xl opacity-60 
-                  bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 
-                  rounded-full animate-pulse"
-                />
+          {/* ✅ TABS */}
+          <div className="flex justify-center gap-4 mt-2">
+            {/* bKash */}
+            <button
+              onClick={() => setActiveTab("bkash")}
+              className="relative px-6 py-2 rounded-xl font-bold text-white group overflow-hidden cursor-pointer"
+            >
+              {/* Glow background */}
+              <span
+                className={`absolute inset-0 rounded-xl blur-xl opacity-70 transition-all duration-500 ${
+                  activeTab === "bkash"
+                    ? "bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-500 scale-110"
+                    : "bg-white/10 opacity-30"
+                }`}
+              />
 
-                <img
-                  src={icon}
-                  alt="agent icon"
-                  className="relative w-40 h-20 object-contain 
-                  transform-gpu 
-                  group-hover:rotate-y-12 group-hover:-rotate-x-6
-                  group-hover:scale-110 
-                  transition-all duration-500 ease-out
-                  drop-shadow-[0_25px_40px_rgba(0,0,0,0.8)]
-                  animate-float"
-                />
-              </div>
+              {/* Neon border */}
+              <span
+                className={`absolute inset-0 rounded-xl border transition-all duration-500 ${
+                  activeTab === "bkash"
+                    ? "border-pink-400 shadow-[0_0_15px_#ff4ecd,0_0_30px_#ff4ecd]"
+                    : "border-white/20"
+                }`}
+              />
+
+              {/* Content */}
+              <span className="relative z-10 tracking-wide">bKash</span>
+            </button>
+
+            {/* Nagad */}
+            <button
+              onClick={() => setActiveTab("nagad")}
+              className="relative px-6 py-2 rounded-xl font-bold text-white group overflow-hidden cursor-pointer"
+            >
+              {/* Glow background */}
+              <span
+                className={`absolute inset-0 rounded-xl blur-xl opacity-70 transition-all duration-500 ${
+                  activeTab === "nagad"
+                    ? "bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-400 scale-110"
+                    : "bg-white/10 opacity-30"
+                }`}
+              />
+
+              {/* Neon border */}
+              <span
+                className={`absolute inset-0 rounded-xl border transition-all duration-500 ${
+                  activeTab === "nagad"
+                    ? "border-orange-400 shadow-[0_0_15px_#ff9a00,0_0_30px_#ff9a00]"
+                    : "border-white/20"
+                }`}
+              />
+
+              {/* Content */}
+              <span className="relative z-10 tracking-wide">Nagad</span>
+            </button>
+          </div>
+
+          {icon && (
+            <div className="flex justify-center">
+              <img
+                src={icon}
+                alt="agent icon"
+                className="w-40 h-20 object-contain"
+              />
             </div>
           )}
 
           <div className="text-center">
-            <h3 className="font-bold text-2xl text-white mb-2 drop-shadow-lg">
+            <h3 className="font-bold text-2xl text-white mb-2">
               {paymentAgent?.name}
             </h3>
 
-            <p className="text-white text-xl mb-1 font-bold">
+            <p className="text-white text-xl font-bold">
               Number:{" "}
               <span className="font-medium">{paymentAgent?.number}</span>
             </p>
@@ -155,22 +191,10 @@ if (methodLoading || !paymentAgent) {
       {/* FORM */}
       <div className="p-4">
         <form
-          className="bg-white/5 px-6 space-y-3 py-6 backdrop-blur-md rounded-3xl shadow-sm"
+          className="bg-white/5 px-6 space-y-3 py-6 backdrop-blur-md rounded-3xl"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <h3 className="text-center font-extrabold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
-            Minimum Deposit ৳1000
-          </h3>
-          {paymentAgent?.name == "Nagad" && (
-            <h3 className="text-center font-extrabold text-[15px] bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
-              Bkash নম্বর পেতে পেজটি Reload করুন 📢
-            </h3>
-          )}{" "}
-          {paymentAgent?.name == "Bkash" && (
-            <h3 className="text-center font-extrabold text-[15px] bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md">
-              Nagad নম্বর পেতে পেজটি Reload করুন 📢
-            </h3>
-          )}
+        <h3 className="text-center font-extrabold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md"> Minimum Deposit ৳1000 </h3>
           <div>
             <input
               {...register("transactionId", {
@@ -183,6 +207,7 @@ if (methodLoading || !paymentAgent) {
               <p className="error">{errors.transactionId.message}</p>
             )}
           </div>
+
           <div>
             <input
               type="number"
@@ -190,7 +215,7 @@ if (methodLoading || !paymentAgent) {
                 required: "Amount required",
                 min: {
                   value: 1000,
-                  message: "Minimum Deposit  ৳1000",
+                  message: "Minimum Deposit ৳1000",
                 },
               })}
               placeholder="Enter Amount"
@@ -200,9 +225,10 @@ if (methodLoading || !paymentAgent) {
               <p className="error font-semibold">{errors.amount.message}</p>
             )}
           </div>
+
           <button
             disabled={isLoading}
-            className="w-full py-4 cursor-pointer text-white rounded-2xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105 transition-all flex justify-center items-center gap-2 shadow-lg"
+            className="w-full py-4 cursor-pointer text-white rounded-2xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 flex justify-center items-center gap-2"
           >
             {isLoading && <ImSpinner2 className="animate-spin" size={20} />}
             {isLoading ? "Processing..." : "Submit Deposit"}
