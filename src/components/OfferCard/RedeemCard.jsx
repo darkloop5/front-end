@@ -18,7 +18,7 @@ const RedeemCard = ({ redeem }) => {
     },
   );
 
-  // loading state UI
+  // loading state 
   if (isFetching) {
     return (
       <div className="w-full max-w-md mx-auto animate-pulse">

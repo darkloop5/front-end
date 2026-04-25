@@ -2,7 +2,7 @@ import { baseApi } from "../../api/baseApi";
 
 const paymentApiService = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    // ✅ CREATE PAYOUT REQUEST
+    // CREATE PAYOUT REQUEST
     createPayoutRequest: build.mutation({
       query: (data) => ({
         url: "/payout-request",
@@ -10,7 +10,7 @@ const paymentApiService = baseApi.injectEndpoints({
         body: data,
       }),
 
-      // ✅ MATCH BALANCE TAG
+      // MATCH BALANCE TAG
       invalidatesTags: [
         "PayoutRequests",
         { type: "Balance", id: "USER_BALANCE" },
