@@ -39,7 +39,7 @@ const HomeSlider = () => {
             key={index}
             src={img}
             alt={`banner-${index}`}
-            className="w-full flex-shrink-0 object-cover aspect-[3/1]"
+            className="w-full flex-shrink-0 object-cover  "
           />
         ))}
       </div>
