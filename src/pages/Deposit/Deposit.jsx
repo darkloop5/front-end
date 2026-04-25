@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 const Deposit = () => {
   const [addPayment, { isLoading }] = useAddPaymentMutation();
   const { user } = useAuthData();
-  const { data: paymentMethod } = useGetMethodsQuery();
+  const { data: paymentMethod, isLoading: methodLoading  } = useGetMethodsQuery();
   const navigate = useNavigate();
 
   // ✅ STORE RANDOM AGENT SAFELY
@@ -78,6 +78,33 @@ const Deposit = () => {
   };
 
   const icon = getAgentIcon(paymentAgent?.name);
+
+
+  // ✅ SHOW SKELETON WHILE LOADING PAYMENT METHOD
+if (methodLoading || !paymentAgent) {
+  return (
+    <div className="p-4 space-y-4 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl p-6">
+        <div className="w-40 h-20 mx-auto bg-white/10 rounded-xl mb-5" />
+
+        <div className="space-y-3 text-center">
+          <div className="h-6 w-40 mx-auto bg-white/10 rounded" />
+          <div className="h-5 w-52 mx-auto bg-white/10 rounded" />
+          <div className="h-5 w-32 mx-auto bg-white/10 rounded" />
+        </div>
+      </div>
+
+      {/* Form Skeleton */}
+      <div className="bg-white/5 backdrop-blur-md rounded-3xl p-6 space-y-4">
+        <div className="h-6 w-56 mx-auto bg-white/10 rounded" />
+        <div className="h-12 bg-white/10 rounded-xl" />
+        <div className="h-12 bg-white/10 rounded-xl" />
+        <div className="h-14 bg-white/10 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
 
   return (
     <>
