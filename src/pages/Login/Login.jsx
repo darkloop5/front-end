@@ -10,7 +10,6 @@ import { useLoginUserMutation } from "../../redux/services/auth/authApiService";
 import { setCredentials } from "../../redux/features/auth/authSlice";
 
 const Login = () => {
-  const [activeTab, setActiveTab] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
@@ -27,80 +26,79 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
-    try {
-      const loginData =
-        activeTab === "phone"
-          ? { phone: data.phone, password: data.password }
-          : { email: data.email, password: data.password };
+  // Detect Email or Bangladesh Phone
+const detectLoginType = (value) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      const res = await loginUser(loginData).unwrap();
+  // BD Phone: 01XXXXXXXXX (11 digits)
+  const bdPhoneRegex = /^01[3-9]\d{8}$/;
 
-      dispatch(
-        setCredentials({
-          user: res.user,
-          token: res.token,
-          invite: res.user?.invite || "",
-        }),
-      );
+  if (emailRegex.test(value)) return "email";
+  if (bdPhoneRegex.test(value)) return "phone";
 
-      toast.success("Login Success 🚀");
+  return null;
+};
+const onSubmit = async (data) => {
+  try {
+    // ✅ remove spaces
+    const identifier = data.identifier.trim();
+    const password = data.password.trim();
 
-      navigate(from, { replace: true });
-    } catch (err) {
-      toast.error("Invalid credentials");
+    const type = detectLoginType(identifier);
+
+    if (!type) {
+      toast.error("Enter valid Email or BD Phone Number");
+      return;
     }
-  };
+
+    const loginData =
+      type === "email"
+        ? { email: identifier, password }
+        : { phone: identifier, password };
+
+    const res = await loginUser(loginData).unwrap();
+
+    dispatch(
+      setCredentials({
+        user: res.user,
+        token: res.token,
+        invite: res.user?.invite || "",
+      })
+    );
+
+    toast.success("Login Success 🚀");
+
+    navigate(from, { replace: true });
+  } catch (err) {
+    toast.error("Invalid credentials");
+  }
+};
 
   return (
-    <div className="font-urbanist text-white w-full min-h-screen bg-white/5 backdrop-blur-xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
+    <div className="font-urbanist text-white  w-full min-h-screen bg-white/5 backdrop-blur-xl bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035]">
       <div className="bg-gradient-to-br from-purple-700 to-indigo-900 py-10 text-center">
         <h1 className="text-3xl font-black tracking-tight">Welcome Back</h1>
-        <p className="text-sm text-gray-200">Login to continue your journey</p>
+        <p className="text-sm text-gray-200">💰 Login & Start Earning Now</p>
       </div>
 
-      <div className="p-6 space-y-5">
-        {/* Tabs */}
-        <div className="flex bg-white/5 backdrop-blur-md rounded-xl p-1">
-          {["email", "phone"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 rounded-lg font-semibold transition cursor-pointer ${
-                activeTab === tab
-                  ? "bg-purple-600 text-white shadow"
-                  : "text-gray-300"
-              }`}
-            >
-              {tab === "email" ? "Email" : "Phone"}
-            </button>
-          ))}
-        </div>
-
+      <div className="p-6 space-y-5 bg-white/5 mt-5 bg-white/5 backdrop-blur-xl rounded-3xl shadow-xl  border-l-[6px] border-purple-600 ">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4   rounded-md "
         >
-          {/* Email / Phone */}
-          {activeTab === "phone" ? (
-            <div>
-              <input
-                {...register("phone", { required: "Phone required" })}
-                placeholder="Enter phone number"
-                className="inputGlass"
-              />
-              {errors.phone && <p className="error">{errors.phone.message}</p>}
-            </div>
-          ) : (
-            <div>
-              <input
-                {...register("email", { required: "Email required" })}
-                placeholder="Enter email"
-                className="inputGlass text-[18px]"
-              />
-              {errors.email && <p className="error">{errors.email.message}</p>}
-            </div>
-          )}
+          <div>
+            <input
+              {...register("identifier", {
+                required: "Email or Phone required",
+              })}
+              placeholder="Enter Email or Phone Number"
+              className="inputGlass text-[18px]"
+            />
+
+            {errors.identifier && (
+              <p className="error">{errors.identifier.message}</p>
+            )}
+          </div>
 
           {/* Password */}
           <div className="relative">
@@ -133,8 +131,13 @@ const Login = () => {
               Remember me
             </label>
 
-          
-            <Link target="_blank" to={"https://t.me/vistatrust?text=passwordChange"} className="text-purple-400 cursor-pointer">Forgot Password?</Link>
+            <Link
+              target="_blank"
+              to={"https://t.me/vistatrust?text=passwordChange"}
+              className="text-purple-400 cursor-pointer"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           {/* Captcha */}

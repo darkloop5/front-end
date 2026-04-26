@@ -67,7 +67,7 @@ const Register = () => {
         {/* Header */}
         <div className="bg-gradient-to-br from-purple-700 to-indigo-900 text-center py-10">
           <h1 className="text-3xl font-black">Create Account</h1>
-          <p className="text-gray-200 text-sm">Join thousands earning daily</p>
+          <p className="text-gray-200 text-sm">Your Daily Earnings Start Here 💰</p>
         </div>
 
         {/* Body */}
