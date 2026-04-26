@@ -108,7 +108,7 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
                   <Skeleton className="w-24 h-6" />
                 ) : (
                   <p className="text-xl font-bold text-pink-500">
-                    ৳{withdrawableBalance || 0}
+                   ৳{Math.floor(Number(withdrawableBalance || 0))}
                   </p>
                 )}
               </div>
