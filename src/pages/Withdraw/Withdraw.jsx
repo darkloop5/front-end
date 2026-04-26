@@ -44,7 +44,7 @@ const Withdraw = () => {
         userId: user?.userId,
         wallet: formData.wallet,
         walletNumber: formData.walletNumber,
-        amount: formData.amount,
+       amount: Math.floor(Number(formData.amount || 0)),
       };
 
       const res = await createPayoutRequest(payload).unwrap();
