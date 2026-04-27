@@ -74,6 +74,7 @@ const Task = () => {
   const currentDay = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   const startIndex = currentDay * levelInfo.tasksPerDay;
+ 
   const todayTasks = TASKS_DATA.slice(
     startIndex,
     startIndex + levelInfo.tasksPerDay,
@@ -104,6 +105,7 @@ const Task = () => {
   if (balanceLoading || tasksLoading) {
     return <TaskSkeleton />;
   }
+
 
   return (
     <>

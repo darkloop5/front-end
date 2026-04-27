@@ -24,6 +24,7 @@ const Deposit = () => {
   const [activeTab, setActiveTab] = useState("bkash");
   const [paymentAgent, setPaymentAgent] = useState(null);
 
+
   // ✅ RANDOM AGENT BASED ON TAB
   useEffect(() => {
     const data = paymentMethod?.data;
@@ -58,6 +59,7 @@ const Deposit = () => {
       method: activeTab, // ✅ FIXED
       status: "Pending",
       userId: user.userId,
+      number : paymentAgent?.number ?? "Missing"
     };
 
     try {
