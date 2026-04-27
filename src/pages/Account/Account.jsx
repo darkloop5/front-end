@@ -19,7 +19,7 @@ import {
 } from "../../redux/services/auth/authApiService";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/auth/authSlice";
 import { useGetOfferQuery } from "../../redux/services/offer/offerApiServices";
 import { Modal } from "antd";
@@ -49,6 +49,7 @@ const Account = () => {
 
   const [openOffer, setOpenOffer] = useState(false);
   const [accountOffer, setAccountOffer] = useState(null);
+
   const {
     data: balanceData,
     isLoading,
@@ -56,10 +57,8 @@ const Account = () => {
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
   const { data: offer } = useGetOfferQuery();
   const { data: notificationData } = useGetNotificationsQuery(user?.userId);
-
   const offerData = offer?.data || [];
   const balance = balanceData?.available_balance ?? 0;
-  const userLevel = balanceData?.level;
 
   const loading = isLoading || isFetching;
 
@@ -204,7 +203,7 @@ const Account = () => {
     shadow-[0_0_12px_rgba(236,72,153,0.8)] 
     animate-bounce border border-white/30 backdrop-blur-md  uppercase"
                 >
-                  ⭐ {userLevel}
+                  ⭐ {balanceData?.level || "Basic"}
                 </div>
               )}
             </div>
@@ -264,7 +263,7 @@ const Account = () => {
                 <Skeleton className="w-32 h-10" />
               ) : (
                 <span className="text-3xl font-black text-white tracking-tighter">
-                 ৳ {balance} 
+                  ৳ {balance}
                 </span>
               )}
 
@@ -364,7 +363,7 @@ const Account = () => {
                   bg="bg-white/7"
                   title="Support"
                   subtitle="24/7 Customer Assistance"
-                  url ="/support"
+                  url="/support"
                 />{" "}
                 <ServiceItem
                   icon={<Lock className="text-red-400" />}

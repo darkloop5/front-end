@@ -68,7 +68,7 @@ const Withdraw = () => {
           {/* HEADER */}
           <div className="flex justify-between items-center mb-2">
             <div className="px-3 mx-auto py-1 rounded-full bg-gradient-to-r via-pink-500 to-purple-600 text-white text-[10px] font-extrabold animate-bounce">
-              ⭐ LEVEL 1
+             ⭐ {balanceData?.level || "Basic"}
             </div>
           </div>
           {/* BALANCE CARD */}
