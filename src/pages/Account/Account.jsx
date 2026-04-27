@@ -115,18 +115,13 @@ const Account = () => {
 
     let session = null;
 
-    // Morning = 6AM - 11:59AM
-    if (currentHour >= 6 && currentHour < 12) {
+    if (currentHour >= 0 && currentHour < 6) {
+      session = "early";
+    } else if (currentHour >= 6 && currentHour < 12) {
       session = "morning";
-    }
-
-    // Lunch = 12PM - 5:59PM
-    else if (currentHour >= 12 && currentHour < 18) {
+    } else if (currentHour >= 12 && currentHour < 18) {
       session = "lunch";
-    }
-
-    // Night = 6PM - 11:59PM
-    else if (currentHour >= 18 && currentHour <= 23) {
+    } else {
       session = "night";
     }
 
