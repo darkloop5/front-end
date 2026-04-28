@@ -9,10 +9,11 @@ export const taskApiServices = baseApi.injectEndpoints({
       providesTags: ["Tasks"], // Cache tag for automatic invalidation
     }),
     getTask: builder.query({
-        query: () => `/tasks`,
-      providesTags: ["Tasks"], // Cache tag for automatic invalidation
-    })
-,
+      query: (userId) =>
+        userId ? `/tasks/${userId}` : `/tasks`,
+      providesTags: ["Tasks"],
+    }),
+
     // 2️⃣ Complete a task
     completeTask: builder.mutation({
       query: ({ userId, taskId }) => ({
