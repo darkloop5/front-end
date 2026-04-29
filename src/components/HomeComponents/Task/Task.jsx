@@ -9,7 +9,7 @@ import useAuthData from "../../../hooks/useAuthData";
 import GlassCardV2 from "../../GlassCard/GlassCardV2";
 import GlassCard from "../../GlassCard/GlassCard";
 import img from "../../../assets/icon/newbe.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGetUserBalanceQuery } from "../../../redux/services/auth/authApiService";
 import { TaskSkeleton } from "../../Skeleton/TaskSkeleton/TaskSkeleton";
 import TaskCard from "../../GlassCard/TaskCard";
@@ -27,7 +27,7 @@ const Task = () => {
     });
 
   const depositAmount = balanceData?.deposit_balance ?? 0;
-  const isBasicUser = depositAmount < 1000;
+  const isBasicUser = depositAmount < 500;
 
   // =========================
   // LEVEL SYSTEM (CONFIG)
@@ -68,50 +68,24 @@ const Task = () => {
     completedTasksData?.completedTasks?.map((t) =>
       (t.taskId || t._id || t).toString(),
     ) || [];
+    console.log(completedIds);
 
   const [completeTask] = useCompleteTaskMutation();
   const [payUser] = usePayUserMutation();
 
-  // =========================
-  // BD DATE & DAY CALCULATION
-  // =========================
-  const getBDDateOnly = () => {
-    const bd = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Dhaka" }),
-    );
-    bd.setHours(0, 0, 0, 0);
-    return bd;
-  };
 
-  const today = getBDDateOnly();
+  const todayTasks = TASKS_DATA;
 
-  const start = balanceData?.taskStartDate
-    ? new Date(balanceData.taskStartDate)
-    : today;
-
-  const startDateOnly = new Date(start);
-  startDateOnly.setHours(0, 0, 0, 0);
-
-  const diffTime = today.getTime() - startDateOnly.getTime();
-  const currentDay = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-  // Safe Day নিশ্চিত করা (০ থেকে মেয়াদের শেষ দিন পর্যন্ত)
-  const safeDay = Math.max(0, Math.min(currentDay, levelInfo.days - 1));
-
-  // =========================
-  // ⚡ FIXED: SAFE TASK SLICE (Skip/Limit Logic)
-  // =========================
-  const tasksPerDay = levelInfo.tasksPerDay;
-  const startIndex = safeDay * tasksPerDay;
-
-  // আজকের জন্য নির্দিষ্ট টাস্কগুলো আলাদা করা
-  const todayTasks = TASKS_DATA.slice(startIndex, startIndex + tasksPerDay);
+  const safeDay = allTask?.currentDay ?? 0;
+  const tasksPerDay = allTask?.tasksPerDay ?? 0;
+ 
 
   // =========================
   // BASIC LIMIT CHECK
   // =========================
   const BASIC_LIMIT = 6;
   const isBasicAndFinished = isBasicUser && completedIds.length >= BASIC_LIMIT;
+  
 
   // =========================
   // ACTION HANDLER
@@ -137,16 +111,16 @@ const Task = () => {
   };
 
   if (balanceLoading || tasksLoading) return <TaskSkeleton />;
-
-  // আজকের প্রগ্রেস ক্যালকুলেশন
   const todayTaskIds = new Set(todayTasks.map((t) => t._id.toString()));
+
   const todayCompletedCount = completedIds.filter((id) =>
     todayTaskIds.has(id),
   ).length;
-  const progressPercent = Math.min(
-    100,
-    (todayCompletedCount / tasksPerDay) * 100,
-  );
+
+  const progressPercent =
+    tasksPerDay > 0
+      ? Math.min(100, (todayCompletedCount / tasksPerDay) * 100)
+      : 0;
 
   return (
     <>
@@ -179,9 +153,9 @@ const Task = () => {
                   Level : {levelInfo.level} 🔥 (2X Return)
                 </p>
               ) : (
-                <p className="text-yellow-400 text-[10px] font-bold animate-pulse">
+                <Link to="/deposit"><p className="text-yellow-400 text-[10px] font-bold animate-pulse">
                   ⚠️ ডিপোজিট করলে ২ গুণ ইনকাম পাবেন
-                </p>
+                </p></Link>
               )}
             </div>
           </div>
@@ -235,16 +209,15 @@ const Task = () => {
           ) : (
             <></>
           )}
-          {user === null && <TaskCard />}
-          {/* COMPLETE MESSAGE */}
-          {todayCompletedCount === tasksPerDay && tasksPerDay > 0 && (
+          {!user  && <TaskCard />}
+
+          {user && todayCompletedCount === tasksPerDay && (
             <GlassCard>
               <div className="text-center text-white font-bold">
                 🎉 আজকের সব টাস্ক শেষ! <br />⏰ নতুন টাস্ক রাত ১২টার পর আসবে
               </div>
             </GlassCard>
           )}
-
           {/* PROGRESS BAR */}
           <GlassCardV2 className="flex items-center gap-3">
             <span className="text-white text-xs font-semibold whitespace-nowrap">
