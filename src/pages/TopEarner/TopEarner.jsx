@@ -36,7 +36,7 @@ const TopEarner = () => {
           </p>
 
           <p className="text-lg font-bold text-yellow-400">
-            ৳{rankUser[1]?.available_balance}
+         ৳{parseInt(rankUser[1]?.available_balance || 0)}
           </p>
 
           {/* Rank badge */}
@@ -74,7 +74,7 @@ const TopEarner = () => {
           </p>
 
           <p className="text-lg font-bold text-yellow-400">
-            ৳{rankUser[0]?.available_balance}
+          ৳{parseInt(rankUser[1]?.available_balance || 0)}
           </p>
 
           {/* Rank Badge */}
@@ -96,7 +96,7 @@ const TopEarner = () => {
           </p>
 
           <p className="text-lg font-bold text-yellow-400">
-            ৳{rankUser[2]?.available_balance}
+         ৳{parseInt(rankUser[1]?.available_balance || 0)}
           </p>
 
           <div className="mt-2 bg-gradient-to-r from-amber-700 via-orange-600 to-yellow-600 text-white rounded-lg py-1 text-xs">
@@ -134,7 +134,7 @@ const TopEarner = () => {
             </div>
 
             <div className="bg-gradient-to-r from-purple-500 to-indigo-500 px-3 py-1 rounded-full text-sm font-semibold shadow-md">
-              ৳ {item.available_balance}
+            ৳ {Math.round(item.available_balance)}
             </div>
           </div>
         ))}
