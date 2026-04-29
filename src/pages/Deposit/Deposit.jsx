@@ -196,7 +196,7 @@ const Deposit = () => {
           className="bg-white/5 px-6 space-y-3 py-6 backdrop-blur-md rounded-3xl"
           onSubmit={handleSubmit(onSubmit)}
         >
-        <h3 className="text-center font-extrabold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md"> Minimum Deposit ৳1000 </h3>
+        <h3 className="text-center font-extrabold text-xl bg-gradient-to-r from-purple-400 via-pink-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-md"> Minimum Deposit ৳500 </h3>
           <div>
             <input
               {...register("transactionId", {
@@ -216,8 +216,8 @@ const Deposit = () => {
               {...register("amount", {
                 required: "Amount required",
                 min: {
-                  value: 1000,
-                  message: "Minimum Deposit ৳1000",
+                  value: 500,
+                  message: "Minimum Deposit ৳500",
                 },
               })}
               placeholder="Enter Amount"

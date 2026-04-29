@@ -132,8 +132,8 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
                 {...register("amount", {
                   required: "Amount is required",
                   min: {
-                    value: 500,
-                    message: "Minimum amount is ৳500",
+                    value: 300,
+                    message: "Minimum amount is ৳300",
                   },
                   max: {
                     value: withdrawableBalance,

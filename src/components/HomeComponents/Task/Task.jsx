@@ -40,7 +40,7 @@ const Task = () => {
       config = { level: "Three", days: 10, tasksPerDay: 10 };
     else if (deposit >= 5001)
       config = { level: "Two", days: 12, tasksPerDay: 8 };
-    else if (deposit >= 1000)
+    else if (deposit >= 500)
       config = { level: "One", days: 15, tasksPerDay: 6 };
 
     const totalTasks = config.days * config.tasksPerDay;
