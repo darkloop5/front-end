@@ -53,6 +53,7 @@ const Task = () => {
   };
 
   const levelInfo = getUserLevelInfo(depositAmount);
+  
 
   // =========================
   // TASK DATA FROM API
@@ -68,7 +69,7 @@ const Task = () => {
     completedTasksData?.completedTasks?.map((t) =>
       (t.taskId || t._id || t).toString(),
     ) || [];
-    console.log(completedIds);
+  
 
   const [completeTask] = useCompleteTaskMutation();
   const [payUser] = usePayUserMutation();

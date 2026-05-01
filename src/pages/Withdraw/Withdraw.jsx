@@ -24,8 +24,7 @@ const Withdraw = () => {
   } = useGetUserBalanceQuery(user?.userId, { skip: !user?.userId });
 
   const totalBalance = balanceData?.available_balance ?? 0;
-  const withdrawableBalance = balanceData?.earning_balance ?? 0
-
+  const withdrawableBalance = balanceData?.earning_balance;
   const loading = isLoading || isFetching;
 
   const {
@@ -44,7 +43,7 @@ const Withdraw = () => {
         userId: user?.userId,
         wallet: formData.wallet,
         walletNumber: formData.walletNumber,
-       amount: Math.floor(Number(formData.amount || 0)),
+        amount: Math.floor(Number(formData.amount || 0)),
       };
 
       const res = await createPayoutRequest(payload).unwrap();
@@ -60,6 +59,8 @@ const Withdraw = () => {
       );
     }
   };
+  const balance = Number(withdrawableBalance || 0);
+  const finalBalance = balance * (balanceData?.level === "Basic" ? 2 : 1);
 
   return (
     <div className="w-full font-urbanist max-w-md mt-5 bg-gradient-to-br from-[#1e1b4b] via-[#0f172a] to-[#1a1035] shadow-2xl rounded-[40px]">
@@ -68,7 +69,7 @@ const Withdraw = () => {
           {/* HEADER */}
           <div className="flex justify-between items-center mb-2">
             <div className="px-3 mx-auto py-1 rounded-full bg-gradient-to-r via-pink-500 to-purple-600 text-white text-[10px] font-extrabold animate-bounce">
-             ⭐ {balanceData?.level || "Basic"}
+              ⭐ {balanceData?.level || "Basic"}
             </div>
           </div>
           {/* BALANCE CARD */}
@@ -108,7 +109,7 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
                   <Skeleton className="w-24 h-6" />
                 ) : (
                   <p className="text-xl font-bold text-pink-500">
-                   ৳{Math.floor(Number(withdrawableBalance || 0))}
+                    ৳{finalBalance.toFixed(2)}
                   </p>
                 )}
               </div>
@@ -133,10 +134,13 @@ rounded-2xl p-4 shadow-[0_0_40px_rgba(168,85,247,0.25)]"
                   required: "Amount is required",
                   min: {
                     value: 300,
-                    message: "Minimum amount is ৳300",
+                    message: "Minimum Withdraw Amount is ৳300",
                   },
                   max: {
-                    value: withdrawableBalance,
+                    value:
+                      balanceData?.level === "Basic"
+                        ? finalBalance
+                        : withdrawableBalance,
                     message: "Insufficient balance",
                   },
                 })}
