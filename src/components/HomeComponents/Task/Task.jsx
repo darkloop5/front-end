@@ -4,17 +4,19 @@ import {
   useGetCompletedTasksQuery,
   usePayUserMutation,
 } from "../../../redux/services/task/taskApiServices";
-
+import { useState } from "react";
 import useAuthData from "../../../hooks/useAuthData";
 import GlassCardV2 from "../../GlassCard/GlassCardV2";
 import GlassCard from "../../GlassCard/GlassCard";
 import img from "../../../assets/icon/newbe.png";
 import { Link, useNavigate } from "react-router-dom";
+import { ImSpinner2 } from "react-icons/im";
 import { useGetUserBalanceQuery } from "../../../redux/services/auth/authApiService";
 import { TaskSkeleton } from "../../Skeleton/TaskSkeleton/TaskSkeleton";
 import TaskCard from "../../GlassCard/TaskCard";
 
 const Task = () => {
+  const [activeTaskId, setActiveTaskId] = useState(null);
   const { user } = useAuthData();
   const navigate = useNavigate();
 
@@ -25,6 +27,10 @@ const Task = () => {
     useGetUserBalanceQuery(user?.userId, {
       skip: !user?.userId,
     });
+  const [completeTask, { isLoading: completing }] = useCompleteTaskMutation();
+  const [payUser, { isLoading: paying }] = usePayUserMutation();
+
+  const isProcessing = completing || paying;
 
   const depositAmount = balanceData?.deposit_balance ?? 0;
   const isBasicUser = depositAmount < 500;
@@ -32,33 +38,32 @@ const Task = () => {
   // =========================
   // LEVEL SYSTEM (CONFIG)
   // =========================
- const getUserLevelInfo = (deposit) => {
-  let config = { level: "Basic", days: 3, tasksPerDay: 2 };
+  const getUserLevelInfo = (deposit) => {
+    let config = { level: "Basic", days: 3, tasksPerDay: 2 };
 
-  if (deposit >= 20001) {
-    config = { level: "Four", days: 7, tasksPerDay: 15 };
-  } else if (deposit >= 10001) {
-    config = { level: "Three", days: 10, tasksPerDay: 10 };
-  } else if (deposit >= 5001) {
-    config = { level: "Two", days: 12, tasksPerDay: 8 };
-  } else if (deposit >= 500) {
-    config = { level: "One", days: 15, tasksPerDay: 6 };
-  }
+    if (deposit >= 20001) {
+      config = { level: "Four", days: 7, tasksPerDay: 15 };
+    } else if (deposit >= 10001) {
+      config = { level: "Three", days: 10, tasksPerDay: 10 };
+    } else if (deposit >= 5001) {
+      config = { level: "Two", days: 12, tasksPerDay: 8 };
+    } else if (deposit >= 500) {
+      config = { level: "One", days: 15, tasksPerDay: 6 };
+    }
 
-  const totalTasks = config.days * config.tasksPerDay;
+    const totalTasks = config.days * config.tasksPerDay;
 
-  // ✅ deposit amount distribute
-  const reward = deposit > 0 ? deposit / totalTasks : 20;
+    // ✅ deposit amount distribute
+    const reward = deposit > 0 ? deposit / totalTasks : 20;
 
-  return {
-    ...config,
-    reward: Number(reward.toFixed(2)),
-    totalTasks,
+    return {
+      ...config,
+      reward: Number(reward.toFixed(2)),
+      totalTasks,
+    };
   };
-};
 
   const levelInfo = getUserLevelInfo(depositAmount);
-  
 
   // =========================
   // TASK DATA FROM API
@@ -74,47 +79,53 @@ const Task = () => {
     completedTasksData?.completedTasks?.map((t) =>
       (t.taskId || t._id || t).toString(),
     ) || [];
-  
-
-  const [completeTask] = useCompleteTaskMutation();
-  const [payUser] = usePayUserMutation();
-
 
   const todayTasks = TASKS_DATA;
 
   const safeDay = allTask?.currentDay ?? 0;
   const tasksPerDay = allTask?.tasksPerDay ?? 0;
- 
 
   // =========================
   // BASIC LIMIT CHECK
   // =========================
   const BASIC_LIMIT = 6;
   const isBasicAndFinished = isBasicUser && completedIds.length >= BASIC_LIMIT;
-  
 
   // =========================
   // ACTION HANDLER
   // =========================
-  const handleAction = async (task) => {
-    if (!user?.userId || !task?._id) return;
-    const taskId = task._id.toString();
-    if (completedIds.includes(taskId)) return;
+ const handleAction = async (task) => {
+  if (isProcessing || activeTaskId) return;
 
-    try {
-      window.open(task.url, "_blank");
-      await Promise.all([
-        completeTask({ userId: user.userId, taskId: task._id }).unwrap(),
-        payUser({
-          userId: user.userId,
-          amount: Number(levelInfo.reward.toFixed(2)),
-          invite: user?.invite,
-        }).unwrap(),
-      ]);
-    } catch (err) {
-      console.error("Task Completion Error:", err);
+  if (!user?.userId || !task?._id) return;
+
+  const taskId = task._id.toString();
+
+  if (completedIds.includes(taskId)) return;
+
+  try {
+    setActiveTaskId(taskId);
+
+    window.open(task.url, "_blank");
+
+    const res = await completeTask({
+      userId: user.userId,
+      taskId: task._id,
+    }).unwrap();
+
+    if (res?.success) {
+      await payUser({
+        userId: user.userId,
+        amount: Number(levelInfo.reward.toFixed(2)),
+        invite: user?.invite,
+      }).unwrap();
     }
-  };
+  } catch (err) {
+    console.error("Task Completion Error:", err);
+  } finally {
+    setActiveTaskId(null);
+  }
+};
 
   if (balanceLoading || tasksLoading) return <TaskSkeleton />;
   const todayTaskIds = new Set(todayTasks.map((t) => t._id.toString()));
@@ -159,9 +170,11 @@ const Task = () => {
                   Level : {levelInfo.level} 🔥 (2X Return)
                 </p>
               ) : (
-                <Link to="/deposit"><p className="text-yellow-400 text-[10px] font-bold animate-pulse">
-                  ⚠️ ডিপোজিট করলে ২ গুণ ইনকাম পাবেন
-                </p></Link>
+                <Link to="/deposit">
+                  <p className="text-yellow-400 text-[10px] font-bold animate-pulse">
+                    ⚠️ ডিপোজিট করলে ২ গুণ ইনকাম পাবেন
+                  </p>
+                </Link>
               )}
             </div>
           </div>
@@ -199,14 +212,25 @@ const Task = () => {
                     </div>
                     <button
                       onClick={() => handleAction(task)}
-                      disabled={isCompleted}
-                      className={`px-4 py-2 rounded-xl font-bold transition-all ${
+                      disabled={
+                        isCompleted ||
+                        isProcessing ||
+                        activeTaskId === task._id.toString()
+                      }
+                      className={`px-4 py-2 rounded-xl font-bold flex items-center justify-center transition-all ${
                         isCompleted
                           ? "bg-white/20 text-white/50"
                           : "bg-white text-purple-900 cursor-pointer active:scale-95"
-                      }`}
+                      } ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
                     >
-                      {isCompleted ? "✅ Done" : "Start"}
+                      {isCompleted ? (
+                        "✅ Done"
+                      ) : activeTaskId === task._id.toString() &&
+                        isProcessing ? (
+                        <ImSpinner2 className="animate-spin" size={20} />
+                      ) : (
+                        "Start"
+                      )}
                     </button>
                   </div>
                 </div>
@@ -215,7 +239,7 @@ const Task = () => {
           ) : (
             <></>
           )}
-          {!user  && <TaskCard />}
+          {!user && <TaskCard />}
 
           {user && todayCompletedCount === tasksPerDay && (
             <GlassCard>
