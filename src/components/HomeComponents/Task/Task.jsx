@@ -32,25 +32,30 @@ const Task = () => {
   // =========================
   // LEVEL SYSTEM (CONFIG)
   // =========================
-  const getUserLevelInfo = (deposit) => {
-    let config = { level: "Basic", days: 3, tasksPerDay: 2 };
+ const getUserLevelInfo = (deposit) => {
+  let config = { level: "Basic", days: 3, tasksPerDay: 2 };
 
-    if (deposit >= 20001) config = { level: "Four", days: 7, tasksPerDay: 15 };
-    else if (deposit >= 10001)
-      config = { level: "Three", days: 10, tasksPerDay: 10 };
-    else if (deposit >= 5001)
-      config = { level: "Two", days: 12, tasksPerDay: 8 };
-    else if (deposit >= 500)
-      config = { level: "One", days: 15, tasksPerDay: 6 };
+  if (deposit >= 20001) {
+    config = { level: "Four", days: 7, tasksPerDay: 15 };
+  } else if (deposit >= 10001) {
+    config = { level: "Three", days: 10, tasksPerDay: 10 };
+  } else if (deposit >= 5001) {
+    config = { level: "Two", days: 12, tasksPerDay: 8 };
+  } else if (deposit >= 500) {
+    config = { level: "One", days: 15, tasksPerDay: 6 };
+  }
 
-    const totalTasks = config.days * config.tasksPerDay;
+  const totalTasks = config.days * config.tasksPerDay;
 
-    return {
-      ...config,
-      reward: deposit > 0 ? (deposit * 2) / totalTasks : 20,
-      totalTasks,
-    };
+  // ✅ deposit amount distribute
+  const reward = deposit > 0 ? deposit / totalTasks : 20;
+
+  return {
+    ...config,
+    reward: Number(reward.toFixed(2)),
+    totalTasks,
   };
+};
 
   const levelInfo = getUserLevelInfo(depositAmount);
   
