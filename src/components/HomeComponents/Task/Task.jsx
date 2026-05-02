@@ -92,7 +92,7 @@ const Task = () => {
   const isBasicAndFinished =
     isBasicUser &&
     balanceData?.deposit_balance === 0 &&
-    balanceData?.earning_balance === 120 ;
+    balanceData?.earning_balance >= 120 ;
   // =========================
   // ACTION HANDLER
   // =========================
