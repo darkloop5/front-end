@@ -147,7 +147,7 @@ const Task = () => {
           <div className="space-y-3 flex flex-col items-center">
             <img src={img} width={100} alt="congrats" />
             <h4 className="text-white text-center">
-              🏆 দারুণ! আপনি বেসিক ৬টি টাস্ক শেষ করেছেন <br />
+              🏆 দারুণ! আপনার বেসিক ৬টি টাস্ক শেষ <br />
               আরও ইনকাম করতে এখনই ডিপোজিট করুন
             </h4>
             <button
