@@ -89,7 +89,7 @@ const Task = () => {
   // BASIC LIMIT CHECK
   // =========================
   const BASIC_LIMIT = 6;
-  const isBasicAndFinished = isBasicUser && completedIds.length >= BASIC_LIMIT;
+  const isBasicAndFinished = isBasicUser && completedIds?.length == BASIC_LIMIT;
 
   // =========================
   // ACTION HANDLER
