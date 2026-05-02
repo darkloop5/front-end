@@ -41,7 +41,8 @@ const Task = () => {
   const isProcessing = completing || paying;
 
   const depositAmount = balanceData?.deposit_balance ?? 0;
-  const isBasicUser = depositAmount < 500;
+  // const isBasicUser = depositAmount < 500;
+  const isBasicUser = balanceData?.level === "Basic"
 
   // =========================
   // LEVEL SYSTEM (CONFIG)
@@ -91,7 +92,7 @@ const Task = () => {
   const isBasicAndFinished =
     isBasicUser &&
     balanceData?.deposit_balance === 0 &&
-    balanceData?.earning_balance === 120;
+    balanceData?.earning_balance === 120 ;
   // =========================
   // ACTION HANDLER
   // =========================
