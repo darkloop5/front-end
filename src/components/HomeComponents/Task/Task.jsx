@@ -177,9 +177,9 @@ const Task = () => {
               )}
             </div>
           </div>
-
+          {!user && <TaskCard />}
           {/* TASK LIST */}
-          {completedTasksData.total === levelInfo.tasksPerDay ? (
+          {completedTasksData?.total === levelInfo?.tasksPerDay && user ? (
             <>
               {" "}
               <GlassCard>
@@ -254,7 +254,6 @@ const Task = () => {
               )}
             </>
           )}
-          {!user && <TaskCard />}
 
           {/* PROGRESS BAR */}
           <GlassCardV2 className="flex items-center gap-3">
