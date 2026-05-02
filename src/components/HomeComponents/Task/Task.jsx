@@ -29,7 +29,7 @@ const Task = () => {
     });
   const [completeTask, { isLoading: completing }] = useCompleteTaskMutation();
   const [payUser, { isLoading: paying }] = usePayUserMutation();
- // =========================
+  // =========================
   // TASK DATA FROM API
   // =========================
   const { data: allTask, isLoading: tasksLoading } = useGetTaskQuery(
@@ -72,9 +72,7 @@ const Task = () => {
   };
 
   const levelInfo = getUserLevelInfo(depositAmount);
-  
 
- 
   const TASKS_DATA = allTask?.data || [];
   const completedIds =
     completedTasksData?.completedTasks?.map((t) =>
@@ -95,38 +93,38 @@ const Task = () => {
   // =========================
   // ACTION HANDLER
   // =========================
- const handleAction = async (task) => {
-  if (isProcessing || activeTaskId) return;
+  const handleAction = async (task) => {
+    if (isProcessing || activeTaskId) return;
 
-  if (!user?.userId || !task?._id) return;
+    if (!user?.userId || !task?._id) return;
 
-  const taskId = task._id.toString();
+    const taskId = task._id.toString();
 
-  if (completedIds.includes(taskId)) return;
+    if (completedIds.includes(taskId)) return;
 
-  try {
-    setActiveTaskId(taskId);
+    try {
+      setActiveTaskId(taskId);
 
-    window.open(task.url, "_blank");
+      window.open(task.url, "_blank");
 
-    const res = await completeTask({
-      userId: user.userId,
-      taskId: task._id,
-    }).unwrap();
-
-    if (res?.success) {
-      await payUser({
+      const res = await completeTask({
         userId: user.userId,
-        amount: Number(levelInfo.reward.toFixed(2)),
-        invite: user?.invite,
+        taskId: task._id,
       }).unwrap();
+
+      if (res?.success) {
+        await payUser({
+          userId: user.userId,
+          amount: Number(levelInfo.reward.toFixed(2)),
+          invite: user?.invite,
+        }).unwrap();
+      }
+    } catch (err) {
+      console.error("Task Completion Error:", err);
+    } finally {
+      setActiveTaskId(null);
     }
-  } catch (err) {
-    console.error("Task Completion Error:", err);
-  } finally {
-    setActiveTaskId(null);
-  }
-};
+  };
 
   if (balanceLoading || tasksLoading) return <TaskSkeleton />;
   const todayTaskIds = new Set(todayTasks.map((t) => t._id.toString()));
@@ -181,74 +179,83 @@ const Task = () => {
           </div>
 
           {/* TASK LIST */}
-           {
-            completedTasksData.total === levelInfo.tasksPerDay ? <> <GlassCard>
-              <div className="text-center text-white font-bold">
-                🎉 আজকের সব টাস্ক শেষ! <br />⏰ নতুন টাস্ক রাত ১২টার পর আসবে
-              </div>
-            </GlassCard></> : <>  {todayTasks.length > 0 ? (
-            todayTasks.map((task) => {
-              const isCompleted = completedIds.includes(task._id.toString());
-              return (
-                <div
-                  key={task._id}
-                  className="rounded-[18px] overflow-hidden shadow-lg"
-                >
-                  <div
-                    style={{
-                      background:
-                        task.gradient ||
-                        "linear-gradient(135deg,#667eea,#764ba2)",
-                      padding: "12px 16px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                    }}
-                  >
-                    <div className="w-12 h-12 rounded-[14px] bg-white/20 flex items-center justify-center text-2xl">
-                      {task.icon || "🎯"}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <p className="text-white font-bold text-sm">
-                        {task.title}
-                      </p>
-                      <p className="text-white font-extrabold text-xl">
-                        ৳ {levelInfo.reward.toFixed(2)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleAction(task)}
-                      disabled={
-                        isCompleted ||
-                        isProcessing ||
-                        activeTaskId === task._id.toString()
-                      }
-                      className={`px-4 py-2 rounded-xl font-bold flex items-center justify-center transition-all ${
-                        isCompleted
-                          ? "bg-white/20 text-white/50"
-                          : "bg-white text-purple-900 cursor-pointer active:scale-95"
-                      } ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
-                    >
-                      {isCompleted ? (
-                        "✅ Done"
-                      ) : activeTaskId === task._id.toString() &&
-                        isProcessing ? (
-                        <ImSpinner2 className="animate-spin" size={20} />
-                      ) : (
-                        "Start"
-                      )}
-                    </button>
-                  </div>
+          {completedTasksData.total === levelInfo.tasksPerDay ? (
+            <>
+              {" "}
+              <GlassCard>
+                <div className="text-center text-white font-bold">
+                  🎉 আজকের সব টাস্ক শেষ! <br />⏰ নতুন টাস্ক রাত ১২টার পর আসবে
                 </div>
-              );
-            })
+              </GlassCard>
+            </>
           ) : (
-            <></>
-          )}</>
-           }
+            <>
+              {" "}
+              {todayTasks.length > 0 ? (
+                todayTasks.map((task) => {
+                  const isCompleted = completedIds.includes(
+                    task._id.toString(),
+                  );
+                  return (
+                    <div
+                      key={task._id}
+                      className="rounded-[18px] overflow-hidden shadow-lg"
+                    >
+                      <div
+                        style={{
+                          background:
+                            task.gradient ||
+                            "linear-gradient(135deg,#667eea,#764ba2)",
+                          padding: "12px 16px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                        }}
+                      >
+                        <div className="w-12 h-12 rounded-[14px] bg-white/20 flex items-center justify-center text-2xl">
+                          {task.icon || "🎯"}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <p className="text-white font-bold text-sm">
+                            {task.title}
+                          </p>
+                          <p className="text-white font-extrabold text-xl">
+                            ৳ {levelInfo.reward.toFixed(2)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleAction(task)}
+                          disabled={
+                            isCompleted ||
+                            isProcessing ||
+                            activeTaskId === task._id.toString()
+                          }
+                          className={`px-4 py-2 rounded-xl font-bold flex items-center justify-center transition-all ${
+                            isCompleted
+                              ? "bg-white/20 text-white/50"
+                              : "bg-white text-purple-900 cursor-pointer active:scale-95"
+                          } ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
+                        >
+                          {isCompleted ? (
+                            "✅ Done"
+                          ) : activeTaskId === task._id.toString() &&
+                            isProcessing ? (
+                            <ImSpinner2 className="animate-spin" size={20} />
+                          ) : (
+                            "Start"
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <></>
+              )}
+            </>
+          )}
           {!user && <TaskCard />}
 
-        
           {/* PROGRESS BAR */}
           <GlassCardV2 className="flex items-center gap-3">
             <span className="text-white text-xs font-semibold whitespace-nowrap">
