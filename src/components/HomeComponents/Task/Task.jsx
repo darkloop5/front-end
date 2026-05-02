@@ -88,8 +88,10 @@ const Task = () => {
   // BASIC LIMIT CHECK
   // =========================
   const BASIC_LIMIT = 6;
-  const isBasicAndFinished = isBasicUser && completedTasksData?.total == BASIC_LIMIT;
-
+  const isBasicAndFinished =
+    isBasicUser &&
+    balanceData?.deposit_balance === 0 &&
+    balanceData?.earning_balance === 120;
   // =========================
   // ACTION HANDLER
   // =========================
@@ -132,7 +134,6 @@ const Task = () => {
   const todayCompletedCount = completedIds.filter((id) =>
     todayTaskIds.has(id),
   ).length;
-
 
   const progressPercent =
     tasksPerDay > 0
@@ -179,6 +180,7 @@ const Task = () => {
             </div>
           </div>
           {!user && <TaskCard />}
+
           {/* TASK LIST */}
           {completedTasksData?.total === levelInfo?.tasksPerDay && user ? (
             <>
