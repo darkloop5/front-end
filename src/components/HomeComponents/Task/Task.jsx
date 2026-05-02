@@ -88,7 +88,7 @@ const Task = () => {
   // BASIC LIMIT CHECK
   // =========================
   const BASIC_LIMIT = 6;
-  const isBasicAndFinished = isBasicUser && completedIds?.length == BASIC_LIMIT;
+  const isBasicAndFinished = isBasicUser && completedTasksData?.total == BASIC_LIMIT;
 
   // =========================
   // ACTION HANDLER
@@ -132,6 +132,7 @@ const Task = () => {
   const todayCompletedCount = completedIds.filter((id) =>
     todayTaskIds.has(id),
   ).length;
+
 
   const progressPercent =
     tasksPerDay > 0
