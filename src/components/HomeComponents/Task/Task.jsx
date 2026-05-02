@@ -29,6 +29,14 @@ const Task = () => {
     });
   const [completeTask, { isLoading: completing }] = useCompleteTaskMutation();
   const [payUser, { isLoading: paying }] = usePayUserMutation();
+ // =========================
+  // TASK DATA FROM API
+  // =========================
+  const { data: allTask, isLoading: tasksLoading } = useGetTaskQuery(
+    user?.userId,
+  );
+
+  const { data: completedTasksData } = useGetCompletedTasksQuery(user?.userId);
 
   const isProcessing = completing || paying;
 
@@ -64,16 +72,9 @@ const Task = () => {
   };
 
   const levelInfo = getUserLevelInfo(depositAmount);
+  
 
-  // =========================
-  // TASK DATA FROM API
-  // =========================
-  const { data: allTask, isLoading: tasksLoading } = useGetTaskQuery(
-    user?.userId,
-  );
-
-  const { data: completedTasksData } = useGetCompletedTasksQuery(user?.userId);
-
+ 
   const TASKS_DATA = allTask?.data || [];
   const completedIds =
     completedTasksData?.completedTasks?.map((t) =>
@@ -180,7 +181,12 @@ const Task = () => {
           </div>
 
           {/* TASK LIST */}
-          {todayTasks.length > 0 ? (
+           {
+            completedTasksData.total === levelInfo.tasksPerDay ? <> <GlassCard>
+              <div className="text-center text-white font-bold">
+                🎉 আজকের সব টাস্ক শেষ! <br />⏰ নতুন টাস্ক রাত ১২টার পর আসবে
+              </div>
+            </GlassCard></> : <>  {todayTasks.length > 0 ? (
             todayTasks.map((task) => {
               const isCompleted = completedIds.includes(task._id.toString());
               return (
@@ -238,16 +244,11 @@ const Task = () => {
             })
           ) : (
             <></>
-          )}
+          )}</>
+           }
           {!user && <TaskCard />}
 
-          {user && todayCompletedCount === tasksPerDay && (
-            <GlassCard>
-              <div className="text-center text-white font-bold">
-                🎉 আজকের সব টাস্ক শেষ! <br />⏰ নতুন টাস্ক রাত ১২টার পর আসবে
-              </div>
-            </GlassCard>
-          )}
+        
           {/* PROGRESS BAR */}
           <GlassCardV2 className="flex items-center gap-3">
             <span className="text-white text-xs font-semibold whitespace-nowrap">
